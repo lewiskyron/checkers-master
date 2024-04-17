@@ -1,31 +1,54 @@
-from .piece import Piece, RED, BLACK_PIECES
-
-ROWS, COLS = 8, 8
-
-
-def initialize_board():
-    board = [[None for _ in range(COLS)] for _ in range(ROWS)]
-    # Set up initial pieces on the board
-    for row in range(ROWS):
-        for col in range(COLS):
-            if (row + col) % 2 == 1:  # Only place pieces on black squares
-                if row < 3:
-                    board[row][col] = Piece(row, col, RED)
-                elif row > 4:
-                    board[row][col] = Piece(row, col, BLACK_PIECES)
-    return board
+from .board import Board
+from src.constant import RED, BLACK_PIECES
 
 
-def valid_move(board, start_row, start_col, end_row, end_col):
-    # Include move validation logic here
-    pass
+class Game:
+    def __init__(self):
+        self.board = Board()  # Initialize the board
+        self.turn = RED
 
+    def get_board(self):
+        """Return the current state of the board."""
+        return self.board.get_board()
 
-def get_possible_moves(board, row, col):
-    # Implement logic to get possible moves
-    pass
+    def get_current_turn(self):
+        """Returns the current player's turn."""
+        return self.turn
 
+    def change_turn(self):
+        """Switch turns between players."""
+        print('changint turns')
+        if self.turn == BLACK_PIECES:
+            self.turn = RED
+        else:
+            self.turn = RED
 
-def handle_mouse_click(board, row, col):
-    # Implement logic for handling mouse click
-    pass
+    def make_move(self, start_pos, end_pos):
+        """
+        Attempt to make a move on the board and update game state accordingly.
+        """
+        piece = self.board.get_board()[start_pos[0]][start_pos[1]]
+        if (piece and piece.color == self.turn):
+            valid_moves = self.board.get_valid_moves(piece)
+            if end_pos in valid_moves:
+                captured_positions = valid_moves[end_pos]
+                self.board.move_piece(piece, end_pos)
+                # self.board.remove(captured_positions)
+                self.change_turn()
+                self.check_game_over()
+            return True
+        return False
+
+    def check_game_over(self):
+        """
+        Check if the game has ended and set the winner if there is one.
+        """
+        self.winner = self.board.winner()
+        if self.winner is not None:
+            print(f"Game Over! Winner: {self.winner}")
+
+    def get_valid_moves(self, piece):
+        """
+        Retrieve all valid moves for the specified piece based on the current board state.
+        """
+        return self.board.get_valid_moves(piece)

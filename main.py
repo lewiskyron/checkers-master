@@ -1,22 +1,39 @@
 import pygame
-from src.gui import GUI, WIN, FPS
-from  src.game import initialize_board 
+from src.constant import FPS
+from src.game import Game
+from src.constant import WIDTH, HEIGHT, square_size
+from src.gui import GUI
+
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Checkers")
+
+def mouse_postion(pos):
+    x, y = pos
+    row = y // square_size
+    col = x // square_size
+    return row, col
+
 
 def main():
     pygame.init()
-    board = initialize_board()
+    game = Game()
     clock = pygame.time.Clock()
     run = True
-    gui = GUI(WIN, board)
+    gui = GUI(WIN, game)
 
     while run:
-        clock.tick(FPS)
-        gui.draw()
-        for event in pygame.event.get(): # checks if any events have happened at any time 
+        for event in pygame.event.get():  # checks if any events have happened at any time
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                pass
+                pos = pygame.mouse.get_pos()
+                row, col = mouse_postion(pos)
+                gui.select_piece(row, col)
+                # gui.handle_click(3, 2)
+
+        gui.draw()
+        pygame.display.flip()
+        clock.tick(FPS)
 
     pygame.quit()
 

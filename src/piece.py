@@ -1,4 +1,4 @@
-from .gui import RED, BLACK_PIECES, square_size
+from .constant import RED, BLACK_PIECES, square_size
 import pygame
 
 
@@ -24,16 +24,17 @@ class Piece:
         self.x = square_size * self.col + square_size // 2
         self.y = square_size * self.row + square_size // 2
 
-    def define_king(self):
-        self.king = True
-
     def move(self, new_row, new_col):
+        print('This is the new row and col', new_row, new_col)
         self.row = new_row
         self.col = new_col
+        self.calc_pos()
+
+    def define_king(self):
+        self.king = True
 
     def draw(self, win):
         radius = square_size // 2 - 10
         pygame.draw.circle(win, self.color, (self.x, self.y), radius)
         if self.king:
             win.blit(crown, (self.x - crown.get_width() // 2, self.y - crown.get_height() // 2))
-          

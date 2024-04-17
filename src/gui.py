@@ -1,43 +1,71 @@
-import pygame 
+import pygame
+from src.constant import BLACK, BLUE, GREEN, ROWS, COLS, square_size, WHITE
 
-WIDTH, HEIGHT = 800, 800
-ROWS, COLS = 8, 8
-square_size = WIDTH // COLS
-
-# RGB color definitions with a more realistic tone
-WHITE = (240, 217, 181)  # A light wooden color for one set of squares
-BLACK = (181, 136, 99)   # A dark wooden color for the other set of squares
-RED = (194, 59, 34)      # A rich, dark red for one set of game pieces
-GREEN = (0, 100, 0)      # A deep green for potential highlighting of moves or selected piece
-BLACK_PIECES = (90, 90, 90)  # A lighter grey for the other set of game pieces
-BLUE = (29, 77, 142)     # A deep blue, perhaps for highlighting last move or selection
-
-
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Checkers")
-FPS = 60
 
 class GUI:
-    def __init__(self, window, board):
+    def __init__(self, window, game):
         self.window = window
-        self.board = board
+        self.game = game
+        self.selected_piece = (
+            None  # Store the position (row, col) of the selected piece
+        )
+        self.valid_moves = {}  # Dictionary of valid moves from the selected position
 
     def draw_board(self):
         for row in range(ROWS):
-            for col in range(row % 2, COLS, 2):
+            for col in range(COLS):
                 rect = (col * square_size, row * square_size, square_size, square_size)
                 pygame.draw.rect(
                     self.window, WHITE if (row + col) % 2 == 0 else BLACK, rect
                 )
 
+                # Highlight the square if it is the selected piece or a valid move
+                if self.selected_piece and (row, col) == self.selected_piece:
+                    pygame.draw.rect(self.window, BLUE, rect)
+                elif (row, col) in self.valid_moves:
+                    pygame.draw.rect(self.window, GREEN, rect)
+
     def draw_pieces(self):
+        board = self.game.get_board()  # Retrieve the board from the Game instance
         for row in range(ROWS):
             for col in range(COLS):
-                piece = self.board[row][col]
+                piece = board[row][col]
                 if piece:
                     piece.draw(self.window)
 
+    def handle_click(self, row, col):
+        if self.selected_piece and (row, col) in self.valid_moves:
+            # Move the piece if a valid move is selected
+            self.game.make_move(self.selected_piece, (row, col))
+            self.draw()
+            self.deselect_piece()  # Deselect after moving
+
+        elif self.game.get_board()[row][col] is not None:
+            # Select the piece if one is clicked
+            self.select_piece(row, col)
+        else:
+            # Deselect if an empty square or invalid move is clicked
+            self.deselect_piece()
+
+    def select_piece(self, row, col):
+        """Selects a piece and highlights its valid moves."""
+        piece = self.game.get_board()[row][col]
+        if piece and piece.color == self.game.get_current_turn():
+            self.selected_piece = (row, col)
+            self.valid_moves = self.game.get_valid_moves(piece)
+            print(self.valid_moves)
+
+        else:
+            self.selected_piece = None
+            self.valid_moves = {}
+
+    def deselect_piece(self):
+        """Deselects any selected piece."""
+        self.selected_piece = None
+        self.valid_moves = {}
+
     def draw(self):
+        """Draws the entire game board including the board, pieces, and highlights."""
         self.draw_board()
         self.draw_pieces()
         pygame.display.update()
