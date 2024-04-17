@@ -17,11 +17,12 @@ class Game:
 
     def change_turn(self):
         """Switch turns between players."""
-        print('changint turns')
-        if self.turn == BLACK_PIECES:
+        print('changing turns')
+        if self.turn == RED:
+            self.turn = BLACK_PIECES
+        elif self.turn == BLACK_PIECES:  # Use elif to ensure this is only evaluated if the first condition fails
             self.turn = RED
-        else:
-            self.turn = RED
+        print('current turn:', self.turn)
 
     def make_move(self, start_pos, end_pos):
         """
@@ -33,7 +34,7 @@ class Game:
             if end_pos in valid_moves:
                 captured_positions = valid_moves[end_pos]
                 self.board.move_piece(piece, end_pos)
-                # self.board.remove(captured_positions)
+                self.board.remove(captured_positions)
                 self.change_turn()
                 self.check_game_over()
             return True

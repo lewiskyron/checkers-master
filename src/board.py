@@ -53,7 +53,7 @@ class Board:
                 if piece.color == RED:
                     self.red_left -= 1
                 else:
-                    self.white_left -= 1
+                    self.black_left -= 1
 
     def winner(self):
         """Determine if there is a winner based on remaining pieces."""
@@ -108,7 +108,7 @@ class Board:
                     if step == -1:
                         next_row = max(r - 3, 0)
                     else:
-                        next_row = min(r + 3, self.ROWS)
+                        next_row = min(r + 3, ROWS)
                     moves.update(
                         self._traverse_left(r + step, next_row, step, color, left - 1, skipped=last)
                     )
@@ -145,7 +145,7 @@ class Board:
                     if step == -1:
                         next_row = max(r - 3, 0)
                     else:
-                        next_row = min(r + 3, self.ROWS)
+                        next_row = min(r + 3, ROWS)
                     moves.update(
                         self._traverse_left(r + step, next_row, step, color, right - 1, skipped=last)
                     )

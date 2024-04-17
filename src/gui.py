@@ -34,30 +34,25 @@ class GUI:
                     piece.draw(self.window)
 
     def handle_click(self, row, col):
-        if self.selected_piece and (row, col) in self.valid_moves:
-            # Move the piece if a valid move is selected
-            self.game.make_move(self.selected_piece, (row, col))
-            self.draw()
-            self.deselect_piece()  # Deselect after moving
-
-        elif self.game.get_board()[row][col] is not None:
-            # Select the piece if one is clicked
-            self.select_piece(row, col)
+        if self.selected_piece:
+            if (row, col) in self.valid_moves:
+                if self.game.make_move(self.selected_piece, (row, col)):
+                    self.deselect_piece()
+            else:
+                self.deselect_piece()
         else:
-            # Deselect if an empty square or invalid move is clicked
-            self.deselect_piece()
+            self.select_piece(row, col)
 
     def select_piece(self, row, col):
-        """Selects a piece and highlights its valid moves."""
+        """Selects a piece and highlights its valid moves if it's the piece's turn."""
         piece = self.game.get_board()[row][col]
-        if piece and piece.color == self.game.get_current_turn():
+        print('current turn', self.game.get_current_turn())
+        if piece is not None and piece.color == self.game.get_current_turn():
             self.selected_piece = (row, col)
             self.valid_moves = self.game.get_valid_moves(piece)
-            print(self.valid_moves)
-
+            print("Valid moves:", self.valid_moves)
         else:
-            self.selected_piece = None
-            self.valid_moves = {}
+            self.deselect_piece()
 
     def deselect_piece(self):
         """Deselects any selected piece."""

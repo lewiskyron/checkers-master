@@ -28,8 +28,7 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 row, col = mouse_postion(pos)
-                gui.select_piece(row, col)
-                # gui.handle_click(3, 2)
+                gui.handle_click(row, col)
 
         gui.draw()
         pygame.display.flip()
