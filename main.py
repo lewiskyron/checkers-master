@@ -21,7 +21,6 @@ def main():
     clock = pygame.time.Clock()
     run = True
     gui = GUI(WIN, game)
-    ai_agent = AI_agent(BLACK_PIECES, 3)
 
     while run:
 
@@ -30,7 +29,6 @@ def main():
                 run = False
             if (
                 event.type == pygame.MOUSEBUTTONDOWN
-                # and game.get_current_turn() != ai_agent.color
             ):
                 pos = pygame.mouse.get_pos()
                 row, col = mouse_postion(pos)

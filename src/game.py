@@ -1,8 +1,6 @@
 from .board import Board
 from src.constant import RED, BLACK_PIECES
-from src.ai import AI_agent
-import copy
-from src.agent import minimax
+from src.agent import iterative_deepening_minimax
 
 
 class Game:
@@ -10,17 +8,13 @@ class Game:
         self.board = Board()  # Initialize the board
         self.turn = RED
         self.ai_color = BLACK_PIECES
+        self.history_scores = {}
 
         # self.ai_agent = AI_agent(BLACK_PIECES, 3)
 
     def get_board(self):
         """Return the current state of the board."""
         return self.board.get_board()
-
-    # def deep_copy(self):
-    #     """Create a deep copy of the game for simulation purposes."""
-    #     # Ensure that this creates a fully independent copy of the game state
-    #     return copy.deepcopy(self)
 
     def get_current_turn(self):
         """Returns the current player's turn."""
@@ -33,16 +27,6 @@ class Game:
             self.turn = BLACK_PIECES
         elif self.turn == BLACK_PIECES:  # Use elif to ensure this is only evaluated if the first condition fails
             self.turn = RED
-
-    # def ai_move(self):
-    #     """Make AI move if it's AI's turn."""
-    #     if self.turn == self.ai_agent.color:
-    #         best_move = self.ai_agent.choose_move(self)
-    #         if best_move:
-    #             print("AI move:", best_move)
-    #             start_pos, end_pos = best_move
-    #             print(start_pos, end_pos)
-    #             self.make_move(start_pos, end_pos)
 
     def make_move(self, start_pos, end_pos):
         """
@@ -78,7 +62,7 @@ class Game:
 
     def agent_move(self):
         if self.turn == BLACK_PIECES:
-            _, best_move = minimax(self.board, 3, True, self)
+            _, best_move = iterative_deepening_minimax(self.board, 5, self)
             if best_move:
                 self.board = best_move
                 self.change_turn()

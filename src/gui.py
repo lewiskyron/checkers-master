@@ -50,11 +50,9 @@ class GUI:
     def select_piece(self, row, col):
         """Selects a piece and highlights its valid moves if it's the piece's turn."""
         piece = self.game.get_board()[row][col]
-        print('current turn', self.game.get_current_turn())
         if piece is not None and piece.color == self.game.get_current_turn():
             self.selected_piece = (row, col)
             self.valid_moves = self.game.get_valid_moves(piece)
-            print("Valid moves:", self.valid_moves)
         else:
             self.deselect_piece()
 

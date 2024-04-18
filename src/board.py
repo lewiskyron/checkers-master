@@ -18,17 +18,96 @@ class Board:
                     elif row > 4:
                         self.board[row][col] = Piece(row, col, BLACK_PIECES)
 
+
+    def place_piece(self, piece):
+        """Place a piece on the board at its designated position."""
+        row, col = piece.row, piece.col
+        if (
+            self.board[row][col] is None
+        ):  # Ensure the cell is empty before placing the piece
+            self.board[row][col] = piece
+            if piece.color == RED:
+                self.red_left += 1
+                if piece.king:
+                    self.red_kings += 1
+            else:
+                self.black_left += 1
+                if piece.king:
+                    self.black_kings += 1
+
     def get_board(self):
         return self.board
-    
+
     def get_piece(self, row, col):
         return self.board[row][col]
+
+    def get_all_pieces(self):
+        """Retrieve all pieces on the board."""
+        pieces = []
+        for row in self.board:
+            for piece in row:
+                if piece is not None:
+                    pieces.append(piece)
+        return pieces
     
     def evaluate(self):
-        piece_score = self.black_left - self.red_left  # More black pieces are better
-        king_score = (self.black_kings - self.red_kings) * 0.5  # Kings are more valuable
-        return piece_score + king_score
+        # Constants for weight
+        PIECE_WEIGHT = 100
+        KING_WEIGHT = 175
+        CENTER_CONTROL_WEIGHT = 50
+        KING_ROW_CONTROL_WEIGHT = 30
+        BACK_ROW_DEFENSE_WEIGHT = 25
+        MOBILITY_WEIGHT = 5
+        POTENTIAL_KINGING_WEIGHT = 50
+
+        # Basic piece and king counts with weighted scores
+        piece_score = PIECE_WEIGHT * (self.black_left - self.red_left)
+        king_score = KING_WEIGHT * (self.black_kings - self.red_kings)
+
+        # Advanced scoring
+        center_control = 0
+        king_row_control = 0
+        mobility_score = 0
+        potential_kinging = 0
+        back_row_defense = 0
+
+        for piece in self.get_all_pieces():
+            # Mobility: count valid moves
+            valid_moves = self.get_valid_moves(piece)
+            mobility_score += MOBILITY_WEIGHT * len(valid_moves)
+
+            # Central control: extra points for pieces in the center
+            if 2 <= piece.col <= 5 and 2 <= piece.row <= 5:
+                center_control += CENTER_CONTROL_WEIGHT
+
+            # Encouragement for pieces advancing to king rows
+            if piece.color == BLACK_PIECES and not piece.king:
+                if piece.row == ROWS - 2:  # One step away from becoming king
+                    potential_kinging += POTENTIAL_KINGING_WEIGHT
+                if piece.row == ROWS - 1:  # On the king row
+                    king_row_control += KING_ROW_CONTROL_WEIGHT
+            elif piece.color == RED and not piece.king:
+                if piece.row == 1:  # One step away from becoming king
+                    potential_kinging += POTENTIAL_KINGING_WEIGHT
+                if piece.row == 0:  # On the king row
+                    king_row_control += KING_ROW_CONTROL_WEIGHT
+
+            # Back row defense
+            if (piece.color == BLACK_PIECES and piece.row == 0) or \
+            (piece.color == RED and piece.row == ROWS - 1):
+                back_row_defense += BACK_ROW_DEFENSE_WEIGHT
+
+        # Combine all scores into a final evaluation
+        total_score = (piece_score + king_score + mobility_score +
+                    center_control + king_row_control +
+                    back_row_defense + potential_kinging)
+
+        return total_score
+
     
+
+
+
 
     def get_pieces_by_color(self, color):
         pieces = []
