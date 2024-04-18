@@ -20,6 +20,23 @@ class Board:
 
     def get_board(self):
         return self.board
+    
+    def get_piece(self, row, col):
+        return self.board[row][col]
+    
+    def evaluate(self):
+        piece_score = self.black_left - self.red_left  # More black pieces are better
+        king_score = (self.black_kings - self.red_kings) * 0.5  # Kings are more valuable
+        return piece_score + king_score
+    
+
+    def get_pieces_by_color(self, color):
+        pieces = []
+        for row in self.board:
+            for piece in row:
+                if piece is not None and piece.color == color:
+                    pieces.append(piece)
+        return pieces
 
     def move_piece(self, piece, end_pos):
         """Move a piece from its current position to end_pos, handling king promotion and capturing."""
@@ -41,9 +58,6 @@ class Board:
                     self.black_kings += 1
                 else:
                     self.red_kings += 1
-
-            print("Moved piece to", end_pos)
-            print("This is the new end position:", self.board[end_pos[0]][end_pos[1]])
 
     def remove(self, pieces):
         """Remove pieces from the board."""
@@ -77,8 +91,6 @@ class Board:
             right_moves = moves.update(
                 self._traverse_right(row - 1, max(row - 3, -1), -1, piece.color, right)
             )
-            print(f"Left moves found: {left_moves}")
-            print(f"Right moves found: {right_moves}")
 
         if piece.color == RED or piece.king:
             moves.update(
@@ -123,7 +135,6 @@ class Board:
 
             left -= 1
 
-        print('This are the moves',moves)
         return moves
 
     def _traverse_right(self, start, stop, step, color, right, skipped=[]):
