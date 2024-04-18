@@ -34,14 +34,18 @@ class GUI:
                     piece.draw(self.window)
 
     def handle_click(self, row, col):
-        if self.selected_piece:
-            if (row, col) in self.valid_moves:
-                if self.game.make_move(self.selected_piece, (row, col)):
-                    self.deselect_piece()
-            else:
-                self.deselect_piece()
-        else:
+        if self.selected_piece and (row, col) in self.valid_moves:
+            # Move the piece if a valid move is selected
+            self.game.make_move(self.selected_piece, (row, col))
+            self.draw()
+            self.deselect_piece()  # Deselect after moving
+
+        elif self.game.get_board()[row][col] is not None:
+            # Select the piece if one is clicked
             self.select_piece(row, col)
+        else:
+            # Deselect if an empty square or invalid move is clicked
+            self.deselect_piece()
 
     def select_piece(self, row, col):
         """Selects a piece and highlights its valid moves if it's the piece's turn."""

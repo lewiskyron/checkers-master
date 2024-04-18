@@ -25,7 +25,6 @@ class Piece:
         self.y = square_size * self.row + square_size // 2
 
     def move(self, new_row, new_col):
-        print('This is the new row and col', new_row, new_col)
         self.row = new_row
         self.col = new_col
         self.calc_pos()
