@@ -4,12 +4,20 @@ from src.constant import ROWS, COLS
 
 class Board:
     def __init__(self):
+        """
+        Initialize the Board class, setting up an empty board with predefined rows and columns, and initializing default game pieces.
+        """
+
         self.board = [[None for _ in range(COLS)] for _ in range(ROWS)]
         self.red_left = self.black_left = 12  # Assuming a standard game start
         self.red_kings = self.black_kings = 0
         self.initialize_pieces()
 
     def initialize_pieces(self):
+        """
+        Set up the initial pieces on the board based on standard starting positions for a checkers game.
+        """
+
         for row in range(ROWS):
             for col in range(COLS):
                 if (row + col) % 2 == 1:  # Only place pieces on black squares
@@ -17,7 +25,6 @@ class Board:
                         self.board[row][col] = Piece(row, col, RED)
                     elif row > 4:
                         self.board[row][col] = Piece(row, col, BLACK_PIECES)
-
 
     def place_piece(self, piece):
         """Place a piece on the board at its designated position."""
@@ -36,9 +43,27 @@ class Board:
                     self.black_kings += 1
 
     def get_board(self):
+        """
+        Retrieve the current state of the board as a 2D list.
+
+        Returns:
+            list: A 2D list representing the current board state.
+        """
+
         return self.board
 
     def get_piece(self, row, col):
+        """
+        Fetch the piece located at a specific row and column on the board.
+
+        Args:
+            row (int): The row of the piece.
+            col (int): The column of the piece.
+
+        Returns:
+            Piece: The piece at the specified location, if present; otherwise, None.
+        """
+
         return self.board[row][col]
 
     def get_all_pieces(self):
@@ -49,16 +74,23 @@ class Board:
                 if piece is not None:
                     pieces.append(piece)
         return pieces
-    
+
     def evaluate(self):
+        """
+        Evaluate the current board state to give a heuristic score based on various strategic elements like piece count, king count, position, mobility, etc.
+
+        Returns:
+            int: The heuristic score representing the board's state favorability.
+        """
+
         # Constants for weight
         PIECE_WEIGHT = 100
-        KING_WEIGHT = 175
-        CENTER_CONTROL_WEIGHT = 50
+        KING_WEIGHT = 170
+        CENTER_CONTROL_WEIGHT = 30
         KING_ROW_CONTROL_WEIGHT = 30
-        BACK_ROW_DEFENSE_WEIGHT = 25
+        BACK_ROW_DEFENSE_WEIGHT = 18
         MOBILITY_WEIGHT = 5
-        POTENTIAL_KINGING_WEIGHT = 50
+        POTENTIAL_KINGING_WEIGHT = 72
 
         # Basic piece and king counts with weighted scores
         piece_score = PIECE_WEIGHT * (self.black_left - self.red_left)
@@ -104,12 +136,17 @@ class Board:
 
         return total_score
 
-    
-
-
-
-
     def get_pieces_by_color(self, color):
+        """
+        Collect all pieces on the board of a specific color.
+
+        Args:
+            color (str): The color of the pieces to retrieve.
+
+        Returns:
+            list: A list of pieces matching the specified color.
+        """
+
         pieces = []
         for row in self.board:
             for piece in row:
@@ -181,6 +218,21 @@ class Board:
         return moves
 
     def _traverse_left(self, start, stop, step, color, left, skipped=[]):
+        """
+        Explore possible moves to the left of a piece to find all valid moves including captures.
+
+        Args:
+            start (int): The starting row for traversal.
+            stop (int): The stopping row for traversal.
+            step (int): The step to use for row traversal, can be positive or negative.
+            color (str): The color of the moving piece.
+            left (int): The starting column for leftward moves.
+            skipped (list): Previously skipped (captured) pieces in a multi-capture move.
+
+        Returns:
+            dict: A dictionary of valid moves from the current position.
+        """
+
         moves = {}
         last = []
         for r in range(start, stop, step):
@@ -217,6 +269,21 @@ class Board:
         return moves
 
     def _traverse_right(self, start, stop, step, color, right, skipped=[]):
+        """
+        Explore possible moves to the right of a piece to find all valid moves including captures.
+
+        Args:
+            start (int): The starting row for traversal.
+            stop (int): The stopping row for traversal.
+            step (int): The step to use for row traversal, can be positive or negative.
+            color (str): The color of the moving piece.
+            right (int): The starting column for rightward moves.
+            skipped (list): Previously skipped (captured) pieces in a multi-capture move.
+
+        Returns:
+            dict: A dictionary of valid moves from the current position.
+        """
+
         moves = {}
         last = []
         for r in range(start, stop, step):

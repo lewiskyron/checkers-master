@@ -1,20 +1,26 @@
 from .board import Board
 from src.constant import RED, BLACK_PIECES
 from src.agent import iterative_deepening_minimax
+import json
 
 
 class Game:
+    
+        
     def __init__(self):
         self.board = Board()  # Initialize the board
         self.turn = RED
         self.ai_color = BLACK_PIECES
         self.history_scores = {}
 
-        # self.ai_agent = AI_agent(BLACK_PIECES, 3)
-
     def get_board(self):
         """Return the current state of the board."""
         return self.board.get_board()
+
+
+    # def save_history_scores(self, file_path="history_scores.json"):
+    #     with open(file_path, "w") as file:
+    #         json.dump(self.history_scores, file, indent=4)
 
     def get_current_turn(self):
         """Returns the current player's turn."""
@@ -62,7 +68,7 @@ class Game:
 
     def agent_move(self):
         if self.turn == BLACK_PIECES:
-            _, best_move = iterative_deepening_minimax(self.board, 5, self)
+            _, best_move = iterative_deepening_minimax(self.board, 4, self)
             if best_move:
                 self.board = best_move
                 self.change_turn()

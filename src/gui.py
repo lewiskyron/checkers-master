@@ -4,6 +4,14 @@ from src.constant import BLACK, BLUE, GREEN, ROWS, COLS, square_size, WHITE
 
 class GUI:
     def __init__(self, window, game):
+        """
+        Initialize the GUI for a game, setting up the window and storing the game instance.
+
+        Args:
+            window (pygame.Surface): The pygame window surface where the game will be drawn.
+            game (Game): The game instance containing the logic and state of the board.
+        """
+
         self.window = window
         self.game = game
         self.selected_piece = (
@@ -12,6 +20,10 @@ class GUI:
         self.valid_moves = {}  # Dictionary of valid moves from the selected position
 
     def draw_board(self):
+        """
+        Draw the checkerboard on the window, highlighting selected pieces and valid moves.
+        """
+
         for row in range(ROWS):
             for col in range(COLS):
                 rect = (col * square_size, row * square_size, square_size, square_size)
@@ -26,6 +38,10 @@ class GUI:
                     pygame.draw.rect(self.window, GREEN, rect)
 
     def draw_pieces(self):
+        """
+        Draw all the pieces on the board, delegating the piece drawing to each piece's draw method.
+        """
+
         board = self.game.get_board()  # Retrieve the board from the Game instance
         for row in range(ROWS):
             for col in range(COLS):
@@ -34,6 +50,14 @@ class GUI:
                     piece.draw(self.window)
 
     def handle_click(self, row, col):
+        """
+        Handle a click event on the board. This manages piece selection, movement, and deselecting pieces.
+
+        Args:
+            row (int): The row where the click occurred.
+            col (int): The column where the click occurred.
+        """
+
         if self.selected_piece and (row, col) in self.valid_moves:
             # Move the piece if a valid move is selected
             self.game.make_move(self.selected_piece, (row, col))
